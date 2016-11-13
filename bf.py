@@ -24,70 +24,73 @@ class bf_data:
     
     def set(self, value):
         self.data[self.data_ptr] = value
-            
 
-class bf_input:
-    def __init__(self, data, input):
-        self.data = data
-        self.input = iter(input)
+
+
+
+class bf_code:
+    def __init__(self, code=None, code_ptr=0):
+        self.code = code or []
+        self.code_ptr = code_ptr
     
-    def apply(self):
-        self.data.set(input.__next__())
+    def get(self):
+        return self.code[self.code_ptr]
         
+    def match_bracket(self):
+        bracket_values = {'[': +1, ']': -1}
+        code_step = brackets = bracket_values[self.get()]
+        while brackets != 0:
+            self.code_ptr += code_step  # next char
+            brackets += bracket_values.get(self.get(), 0)  # account for character
+    
+    def __iter__(self):
+        while self.code_ptr < len(self.code):
+            yield self.get()
+            self.code_ptr += 1
+
 
 class bf_iter:
     def __init__(self, code, input=(), data = None):
-        self.code_ptr = 0
-        self.data_ptr = 0
-        self.data = data or [0]
-        self.input = iter(input)
-        self.brackets = []
+        self.code = bf_code(code)
+        self.data = bf_data(data, 0)
+        self.input = bf_input(self.data, input)
+    
+    def begin_while(self):
+        if self.data.get() == 0:
+            self.code.match_bracket()
+    
+    def end_while(self):
+        if self.data.get() != 0:
+            self.code.match_bracket()
 
+    def input(self):
+        self.data.set(self.input.__next__())
+    
     def __iter__(self)
-        while self.code_ptr < len(self.code):
-            char = self.code[self.code_ptr]
-        if char == '+':
-            data[i] += 1
-        elif char == '-':
-            data[i] -= 1
-        elif char == '<':
-            if i:
-                i -= 1
-        elif char == '>':
-            i += 1
-            if i == len(data):
-                data.append(0)
-        elif char == ',':
-            try:
-                data[i] = input.__next__()
-            except StopIteration:
-                data[i] = 0
-        elif char == '.':
-            yield data[i]
-        elif char == '[':
-            if data[i] != 0:
-                brackets.append(f)
-            else:
-                depth = 1
-                while depth:
-                    f += 1
-                    depth += {'[': 1, ']': -1}.get(code[f], 0)
-        elif char == ']':
-            if data[i]:
-                f = brackets[-1]
-            else:
-                brackets.pop()
-        f += 1
+        for char in self.code:
+            bf = {
+                '+': self.data.increment,
+                '-': self.data.decrement,
+                '>': self.data.shiftr,
+                '<': self.data.shiftl,
+                '[': self.begin_while,
+                ']': self.end_while
+                ',': self.input,
+            }
+            if char == '.':
+                yield self.data.get()
+            elif char in bf:
+                bf[char]()
 
 
 def run_bf (code, input = '', data = None):
     input_type = type(input)
     if input_type is str:
         input = (ord(x) for x in input) 
-    output = run_bf_iter(code, input, data)
+    output = bf_iter(code, input, data)
     if input_type is str:
         output_list = list(output)
-        output_str = ''.join([chr(x) for x in output_list])
+        output_str = ''.join(chr(x) for x in output_list)
         return output_str if output_str.isprintable() else output_list
     else:
         return input_type(output)
