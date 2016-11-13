@@ -1,13 +1,51 @@
-def run_bf_iter (code, input = (), data = None):
-    f = 0
-    i = 0
-    if not data:
-        data = [0]
-    input = iter(input)
+
+class bf_data:
+    def __init__(self, data=None, data_ptr=0):
+        self.data_ptr = data_ptr
+        self.data = data or []
+        while len(self.data) < self.data_ptr:
+            self.data.append(0)
     
-    brackets = []
-    while f < len(code):
-        char = code[f]
+    def increment(self):
+        self.data[data_ptr] += 1
+    
+    def decrement(self):
+        self.data[data_ptr] -= 1
+    
+    def shiftr(self):
+        self.data_ptr += 1
+        
+    def shiftl(self):
+        if self.data_ptr:
+            self.data_ptr -= 1
+
+    def get(self):
+        return self.data[self.data_ptr]
+    
+    def set(self, value):
+        self.data[self.data_ptr] = value
+            
+
+class bf_input:
+    def __init__(self, data, input):
+        self.data = data
+        self.input = iter(input)
+    
+    def apply(self):
+        self.data.set(input.__next__())
+        
+
+class bf_iter:
+    def __init__(self, code, input=(), data = None):
+        self.code_ptr = 0
+        self.data_ptr = 0
+        self.data = data or [0]
+        self.input = iter(input)
+        self.brackets = []
+
+    def __iter__(self)
+        while self.code_ptr < len(self.code):
+            char = self.code[self.code_ptr]
         if char == '+':
             data[i] += 1
         elif char == '-':
@@ -188,4 +226,3 @@ std['bit'] = '''for 3
   mov 1 0
   dec 2
  mov 2 1'''
-
