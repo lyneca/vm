@@ -67,4 +67,4 @@ class bfo_loop(bfo):
 # for example:
 #  inc = bfo_primitive('+')
 #  dec = bfo_primitive('-')
-#  mov = bfo_loop(((inc, (1,)), (dec, (0,))), 0)
+#  mov = bfo(bfo_loop(((inc, (1,)), (dec, (0,))), 0), (0, 0, 1))

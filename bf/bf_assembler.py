@@ -88,15 +88,30 @@ def bfa_ops(base, symbols=None, objs=std)  # might even work
     return bfo(routine), symbols.symbol_list
         
         
-def assemble_bfo(bfa, symbols=None, objs=std):
-    return bfa_ops(bfa_indented_tokens(bfa), symbols, objs)
+class bfo_lib(dict):
+    def __setitem__(self, op, obj):
+        if type(obj) is str:
+            self.add_obj(op, obj)
+        else:
+            dict.__setitem__(self, op, obj)
+    
+    def assemble(self, bfa, symbols=None):
+        tokens = bfa_tokens(bfa)
+        tokens = bfa_indented_tokens(tokens)
+        return bfa_ops(tokens, symbols, self)[0]
+
+    def add_obj(self, op, bfa, symbols=None):
+        obj = self.assemble(bfa, symbols)
+        dict.__setitem__(self, op, obj)
+
+std = bfo_lib()
 
 std['mov'] = '''wnz 0
     dec 0
     inc 1'''
 std['double'] = '''wnz 0
     dec 0
-    inc 1 2'''
+    inc 1 1'''
 std['dmov'] = '''wnz 0
     dec 0
     inc 1
@@ -147,4 +162,3 @@ std['bit'] = '''wnz 3
   mov 1 0
   dec 2
  mov 2 1'''
-
