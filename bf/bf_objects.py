@@ -54,17 +54,16 @@ class bfo:
             ret += obj.do(shifter, subargs)
 
 class bfo_loop(bfo):
-    def __init__(self, routine, test_arg, post_shift=0):
-        bfo.__init__(self, routine)
-        self.test_arg = test_arg
+    def __init__(self, base, post_shift=0):
+        self.base = base
         self.post_shift = post_shift
     
     def do(self, shifter, argmap):
-        pre_shift = shifter.shift(argmap[self.test_arg])
-        body = bfo.do(self, shifter, argmap)
-        post_shift = shifter.shift(argmap[self.test_arg], self.post_shift)
+        pre_shift = shifter.shift(argmap[0])
+        body = base.do(shifter, argmap[1:])
+        post_shift = shifter.shift(argmap[0], self.post_shift)
         return pre_shift + '[' + body + post_shift + ']'
- 
+
 # for example:
 #  inc = bfo_primitive('+')
 #  dec = bfo_primitive('-')
