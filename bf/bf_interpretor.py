@@ -1,3 +1,4 @@
+import vm
 
 class bf_data:
     def __init__(self, data=None, data_ptr=0):
@@ -82,19 +83,9 @@ class bf_iter:
             elif char in bf:
                 bf[char]()
 
-
-def run_bf (code, input = '', data = None):
-    input_type = type(input)
-    if input_type is str:
-        input = (ord(x) for x in input) 
-    output = bf_iter(code, input, data)
-    if input_type is str:
-        output_list = list(output)
-        output_str = ''.join(chr(x) for x in output_list)
-        return output_str if output_str.isprintable() else output_list
-    else:
-        return input_type(output)
-
+@vm.iterate_and_cast_back
+def run_bf (input, code, data = None):
+    return bf_iter(code, input, data)
 
 geq = ',+>,+<[->->>+<<[->+<]>[[-<+>]>-<]>[.-<<<[-]>>>]<<<]>[[-].]'
 safe_sub = ',+>,+<[->->>+<<[->+<]>[[-<+>]>-<]>[-.<<<[-]>>>]<<<]>[.[-]]'
